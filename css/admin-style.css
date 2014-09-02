@@ -1,0 +1,23 @@
+/* Newsletter Metabox */
+.bf-meta {  }
+.bf-meta ul li { height: 20px; clear:both; margin: 0 0 15px 0;}
+.bf-meta ul li label { width: 160px; display:block; float:left; padding-top:4px; }
+.bf-meta ul li input { width:125px; display:block; float:left; }
+.bf-meta ul li input.wide { width:250px; }
+.bf-meta ul li input[type=radio], .bf-meta ul li input[type=checkbox] { width: auto; margin-top: 4px;}
+.bf-meta ul li em { width: 200px; display:block; float:left; color:gray; margin-left:10px; padding-top: 4px}
+
+#titlediv #titlewrap label#title-prompt-text {
+    width: auto;
+    clip: auto;
+    height: auto;
+    display: block;
+    position: relative;
+}
+
+.left { float: left; }
+.right { float: right; }
+
+
+
+
