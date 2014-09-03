@@ -250,11 +250,11 @@ function newsletter_content( $content, $post ) {
         return $content;
     }
         
-    $header = get_option( 'newsletter-header-tempate' );
+    $header = get_option( 'newsletter-header-template' );
     $footer = get_option( 'newsletter-footer-template' );
 
     $today = date("jS F Y");
-    $unsubscribe = get_permalink( get_page_by_title( 'Unsubscribe' ) ) . '?email=%email%';
+    $unsubscribe = add_query_arg ( "email", "%email%", get_permalink( get_page_by_title( 'Unsubscribe' ) ) );
     $content .= str_replace( 
                 array( '{today}',
                     '{unsubscribe}',
