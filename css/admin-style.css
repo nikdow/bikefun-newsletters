@@ -18,6 +18,10 @@
 .left { float: left; }
 .right { float: right; }
 
+form#newsletter_options textarea {
+    height: 400px;
+    width: 800px;
+}
 
 
 

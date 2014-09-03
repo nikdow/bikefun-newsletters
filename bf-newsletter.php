@@ -10,12 +10,13 @@
 /*
  * Newsletters
  */
-function bf_newsletter_enqueue_scripts(  ) {
+
+function bf_newsletter_admin_scripts( $hook = "" ) {
     global $post;
-    if( $post->post_type !== 'bf_newsletter' ) return;
+    if( $post->post_type !== 'bf_newsletter' && "bf_newsletter_options" != $hook ) return;
     wp_register_script( 'angular', "//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js", 'jquery' );
-    wp_enqueue_script('angular');
     wp_register_script('newsletter-admin', plugins_url( 'js/newsletter-admin.js' , __FILE__ ), array('jquery', 'angular') );
+    wp_enqueue_script('angular');
     wp_localize_script( 'newsletter-admin', '_main',
         array( 'post_url' => admin_url('post.php'),
                'ajax_url' => admin_url('admin-ajax.php'),
@@ -24,7 +25,7 @@ function bf_newsletter_enqueue_scripts(  ) {
     wp_enqueue_script( 'newsletter-admin' );
     wp_enqueue_style('newsletter_style', plugins_url( 'css/admin-style.css' , __FILE__ ) );
 }
-add_action( 'admin_enqueue_scripts', 'bf_newsletter_enqueue_scripts' );
+add_action( 'admin_enqueue_scripts', 'bf_newsletter_admin_scripts' );
 
 add_action( 'init', 'create_bf_newsletter' );
 function create_bf_newsletter() {
@@ -276,6 +277,7 @@ function newsletter_content( $content, $post ) {
         if( $clean_ed === $clean_sd ) $clean_ed = "";
         
         $if_url = $meta_url ? "display: block;" : "display: none;";
+        $permalink = get_permalink( $row->ID );
         
         $content .= str_replace( 
                 array( '{post_title}',
@@ -288,6 +290,7 @@ function newsletter_content( $content, $post ) {
                     '{description}',
                     '{if_url}',
                     '{url}',
+                    '{permalink}',
                     ),
                 array( $row->post_title,
                     $clean_sd,
@@ -299,12 +302,11 @@ function newsletter_content( $content, $post ) {
                     $row->post_content,
                     $if_url,
                     $meta_url,
+                    $permalink,
                     ),
                 $eventTemplate);
     }
-
     return $content;
-
 }
 
 add_action( 'admin_menu', 'newsletter_menu' );
@@ -316,6 +318,7 @@ function newsletter_menu() {
 
 /** Step 3. */
 function newsletter_options() {
+        bf_newsletter_admin_scripts( "bf_newsletter_options" );
 	if ( !current_user_can( 'manage_options' ) )  {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	}
