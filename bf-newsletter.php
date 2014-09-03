@@ -149,15 +149,21 @@ function save_bf_newsletter(){
                 }
                 
             } else {
+                
+                $already_sent = get_post_meta( $post->ID, 'bf_newsletter_sent', true );
+                if ( "1" === $already_sent ) {
+                    echo json_encode( array ( 'error'=>'Newsletter already sent once, can\'t send again' ) );
+                    die;
+                }
                
                 global $wpdb;
 
-                        $query = $wpdb->prepare ( 
-                            "SELECT pme.meta_value as email "
-                            . "FROM " . $wpdb->posts . " p" .
-                            " LEFT JOIN " . $wpdb->postmeta . " pme ON pme.post_id=p.ID AND pme.meta_key='bf_subscription_email'" .
-                            " WHERE p.post_type='bf_subscription' AND p.`post_status`='private'", array() );
-                        $sendTo = $wpdb->get_results ( $query );
+                $query = $wpdb->prepare ( 
+                    "SELECT pme.meta_value as email "
+                    . "FROM " . $wpdb->posts . " p" .
+                    " LEFT JOIN " . $wpdb->postmeta . " pme ON pme.post_id=p.ID AND pme.meta_key='bf_subscription_email'" .
+                    " WHERE p.post_type='bf_subscription' AND p.`post_status`='private'", array() );
+                $sendTo = $wpdb->get_results ( $query );
             }
             $testing = true; // true on dev computer - not the same as test addresses from UI
             $count =0;
@@ -169,7 +175,7 @@ function save_bf_newsletter(){
                 $headers = array();
                 $headers[] = 'From: Bike Fun <info@bikefun.org>';
                 $headers[] = "Content-type: text/html";
-                $message = $post->post_content;
+                $message = str_replace( "%email%", $email, $post->post_content );
                 wp_mail( $email, $subject, $message, $headers );
                 $count++;
                 update_post_meta($post->ID, "bf_newsletter_progress", json_encode( array ( 
@@ -179,6 +185,9 @@ function save_bf_newsletter(){
                 if ( $testing && $count > 5 ) break;
             }
             echo json_encode( array ( "success"=>"completed: " . $count . " emails" ) );
+            if( ! $testing ) {
+                update_post_meta ( $post->ID, "bf_newsletter_sent", "1" );
+            }
             die;
         }
     }
@@ -229,6 +238,9 @@ function bf_newsletter_enter_title( $input ) {
     }
     return $input;
 }
+/*
+ * create the newsletter from templates and event data
+ */
 
 add_filter( 'default_content', 'newsletter_content', 10, 2 );
 
@@ -238,11 +250,20 @@ function newsletter_content( $content, $post ) {
         return $content;
     }
         
-    $custom = get_post_custom( $post->ID );
-    
-    $content = "<h2>Your Bike Fun Newsletter</h2>";
-    $content .= "Rides from " . date("jS F Y");
-    
+    $header = get_option( 'newsletter-header-tempate' );
+    $footer = get_option( 'newsletter-footer-template' );
+
+    $today = date("jS F Y");
+    $unsubscribe = get_permalink( get_page_by_title( 'Unsubscribe' ) ) . '?email=%email%';
+    $content .= str_replace( 
+                array( '{today}',
+                    '{unsubscribe}',
+                    ),
+                array( $today,
+                    $unsubscribe,
+                    ),
+                $header );
+            
     global $wpdb;
     $now = time() + ( get_option( 'gmt_offset' ) * 3600 );
 
@@ -266,7 +287,6 @@ function newsletter_content( $content, $post ) {
         $meta_et = $meta_ed;
         $meta_place = $custom["bf_events_place"][0];
         $meta_url = $custom["bf_events_url"][0];
-        $thumbnail_id = $custom["_thumbnail_id"][0];
         
         $time_format = get_option('time_format');
         
@@ -306,6 +326,17 @@ function newsletter_content( $content, $post ) {
                     ),
                 $eventTemplate);
     }
+    
+    $content .= str_replace( 
+                array( '{today}',
+                    '{unsubscribe}',
+                    ),
+                array( $today,
+                    $unsubscribe,
+                    ),
+                $footer
+            );
+    
     return $content;
 }
 
@@ -318,33 +349,40 @@ function newsletter_menu() {
 
 /** Step 3. */
 function newsletter_options() {
-        bf_newsletter_admin_scripts( "bf_newsletter_options" );
+        bf_newsletter_admin_scripts( "bf_newsletter_options" ); // load the admin CSS
 	if ( !current_user_can( 'manage_options' ) )  {
 		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 	}
 
             // variables for the field and option names 
-            $opt_name = 'newsletter-event-template';
             $hidden_field_name = 'bf_submit_hidden';
-            $data_field_name = 'newsletter-event-template';
-
-            // Read in existing option value from database
-            $opt_val = get_option( $opt_name );
+            $options_array = array ( 
+                array('opt_name'=>'newsletter-header-template', 'data_field_name'=>'newsletter-header-template',
+                    'opt_label'=>"HTML header for newsletter - prepended to events list:"),
+                array('opt_name'=>'newsletter-event-template', 'data_field_name'=>'newsletter-event-template',
+                    'opt_label'=>"HTML template for each event in newsletter:" ),
+                array('opt_name'=>'newsletter-footer-template', 'data_field_name'=>'newsletter-footer-template',
+                    'opt_label'=>"HTML footer for newesletter - appended to events list:"),
+            );
 
             // See if the user has posted us some information
             // If they did, this hidden field will be set to 'Y'
             if( isset($_POST[ $hidden_field_name ]) && $_POST[ $hidden_field_name ] == 'Y' ) {
-                // Read their posted value
-                $opt_val = stripslashes_deep ( $_POST[ $data_field_name ] );
 
-                // Save the posted value in the database
-                update_option( $opt_name, $opt_val );
+                foreach ($options_array as $option_array ) {
+                    
+                    // Read their posted value
+                    $opt_val = stripslashes_deep ( $_POST[ $option_array['data_field_name'] ] );
+
+                    // Save the posted value in the database
+                    update_option( $option_array ['opt_name'], $opt_val );
+                }
 
                 // Put an settings updated message on the screen
 
                 ?>
                 <div class="updated"><p><strong><?php _e('settings saved.' ); ?></strong></p></div>
-            <?php } 
+            <?php }
 
             // Now display the settings editing screen
             ?>
@@ -355,9 +393,16 @@ function newsletter_options() {
             <form name="newsletter_options" id="newsletter_options" method="post" action="">
                 <input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
 
-                <p><?php _e("HTML template for each event in newsletter:" ); ?> 
-                <textarea name="<?php echo $data_field_name; ?>"><?php echo $opt_val; ?></textarea>
-                </p><hr />
+                <?php 
+                foreach ( $options_array as $option_array ) { 
+                    // Read in existing option value from database
+                    $opt_val = get_option( $option_array[ 'opt_name' ] );
+                    ?>
+                    <p><?php _e( $option_array[ 'opt_label' ] ); ?> 
+                    <textarea name="<?php echo $option_array[ 'data_field_name' ]; ?>"><?php echo $opt_val; ?></textarea>
+                    </p>
+                <?php } ?>
+                <hr />
 
                 <p class="submit">
                 <input type="submit" name="Submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" />
