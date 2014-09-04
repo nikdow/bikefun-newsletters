@@ -254,9 +254,9 @@ function newsletter_content( $content, $post ) {
     $footer = get_option( 'newsletter-footer-template' );
 
     $today = date("jS F Y");
-    $content .= get_permalink( get_page_by_title( 'Unsubscribe' ) ) . "<br/>";
     $unsubscribe = add_query_arg ( "email", "%email%", get_permalink( get_page_by_title( 'Unsubscribe' ) ) );
-    $content .= str_replace( 
+    
+    $content = str_replace( 
                 array( '{today}',
                     '{unsubscribe}',
                     ),
