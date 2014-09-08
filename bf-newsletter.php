@@ -173,7 +173,7 @@ function save_bf_newsletter(){
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
                 $headers = array();
-                $from = get_option( 'newsletter-sender-name' ) . '<' . get_option( 'newsletter_sender_address' ) . '>';
+                $from = get_option( 'newsletter-sender-name' ) . ' <' . get_option( 'newsletter-sender-address' ) . '>';
                 $headers[] = 'From: ' . $from;
                 $headers[] = "Content-type: text/html";
                 $message = str_replace( "%email%", $email, $post->post_content );
@@ -361,7 +361,7 @@ function newsletter_options() {
             $options_array = array ( 
                 array('opt_name'=>'newsletter-sender-name', 'data_field_name'=>'newsletter_sender-name', 
                     'opt_label'=>'Newsletter sender (common name)', 'field_type'=>'text'),
-                array('opt_name'=>'newsletter-sender-address', 'data_field_name'=>'newsletter_sender-address', 
+                array('opt_name'=>'newsletter-sender-address', 'data_field_name'=>'newsletter-sender-address', 
                     'opt_label'=>'Newsletter sender (email address)', 'field_type'=>'email'),
                 array('opt_name'=>'newsletter-header-template', 'data_field_name'=>'newsletter-header-template',
                     'opt_label'=>"HTML header for newsletter - prepended to events list:", 'field_type'=>'textarea'),
