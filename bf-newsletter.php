@@ -422,3 +422,17 @@ function newsletter_options() {
         </div>
     <?php
 }
+/*
+ * Add link to menu bar for newsletters
+ */
+add_action( 'admin_bar_menu', 'toolbar_newsletter_link', 999 );
+function toolbar_newsletter_link( $wp_admin_bar ) {
+    $args = array ( 
+        'id'=>'bf-newsletter',
+        'title'=>'Newsletters',
+        'parent'=>'site-name',
+        'href'=>get_site_url() . '/wp-admin/edit.php?post_type=bf_newsletter',
+    );
+
+    $wp_admin_bar->add_node( $args );
+}
