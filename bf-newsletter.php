@@ -173,7 +173,8 @@ function save_bf_newsletter(){
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
                 $headers = array();
-                $headers[] = 'From: Bike Fun <info@bikefun.org>';
+                $from = get_option( 'newsletter-sender-name' ) . '<' . get_option( 'newsletter_sender_address' ) . '>';
+                $headers[] = 'From: ' . $from;
                 $headers[] = "Content-type: text/html";
                 $message = str_replace( "%email%", $email, $post->post_content );
                 wp_mail( $email, $subject, $message, $headers );
@@ -358,12 +359,16 @@ function newsletter_options() {
             // variables for the field and option names 
             $hidden_field_name = 'bf_submit_hidden';
             $options_array = array ( 
+                array('opt_name'=>'newsletter-sender-name', 'data_field_name'=>'newsletter_sender-name', 
+                    'opt_label'=>'Newsletter sender (common name)', 'field_type'=>'text'),
+                array('opt_name'=>'newsletter-sender-address', 'data_field_name'=>'newsletter_sender-address', 
+                    'opt_label'=>'Newsletter sender (email address)', 'field_type'=>'email'),
                 array('opt_name'=>'newsletter-header-template', 'data_field_name'=>'newsletter-header-template',
-                    'opt_label'=>"HTML header for newsletter - prepended to events list:"),
+                    'opt_label'=>"HTML header for newsletter - prepended to events list:", 'field_type'=>'textarea'),
                 array('opt_name'=>'newsletter-event-template', 'data_field_name'=>'newsletter-event-template',
-                    'opt_label'=>"HTML template for each event in newsletter:" ),
+                    'opt_label'=>"HTML template for each event in newsletter:", 'field_type'=>'textarea' ),
                 array('opt_name'=>'newsletter-footer-template', 'data_field_name'=>'newsletter-footer-template',
-                    'opt_label'=>"HTML footer for newesletter - appended to events list:"),
+                    'opt_label'=>"HTML footer for newesletter - appended to events list:", 'field_type'=>'textarea'),
             );
 
             // See if the user has posted us some information
@@ -399,8 +404,12 @@ function newsletter_options() {
                     // Read in existing option value from database
                     $opt_val = get_option( $option_array[ 'opt_name' ] );
                     ?>
-                    <p><?php _e( $option_array[ 'opt_label' ] ); ?> 
-                    <textarea name="<?php echo $option_array[ 'data_field_name' ]; ?>"><?php echo $opt_val; ?></textarea>
+                    <p><?php _e( $option_array[ 'opt_label' ] );
+                        if($option_array[ 'field_type' ] === 'textarea' ) { ?>
+                            <textarea name="<?php echo $option_array[ 'data_field_name' ]; ?>"><?php echo $opt_val; ?></textarea>
+                        <?php } else { ?>
+                            <input type="<?=$option_array[ 'field_type' ]?>" name="<?=$option_array[ 'data_field_name' ]?>" value="<?=$opt_val?>"/>
+                        <?php } ?>
                     </p>
                 <?php } ?>
                 <hr />
