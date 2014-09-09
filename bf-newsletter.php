@@ -159,9 +159,8 @@ function save_bf_newsletter(){
                 global $wpdb;
 
                 $query = $wpdb->prepare ( 
-                    "SELECT pme.meta_value as email "
+                    "SELECT p.post_title as email "
                     . "FROM " . $wpdb->posts . " p" .
-                    " LEFT JOIN " . $wpdb->postmeta . " pme ON pme.post_id=p.ID AND pme.meta_key='bf_subscription_email'" .
                     " WHERE p.post_type='bf_subscription' AND p.`post_status`='private'", array() );
                 $sendTo = $wpdb->get_results ( $query );
             }
