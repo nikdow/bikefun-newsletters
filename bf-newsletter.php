@@ -172,8 +172,7 @@ function save_bf_newsletter(){
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
                 $headers = array();
-                $from = get_option( 'newsletter-sender-name' ) . ' <' . get_option( 'newsletter-sender-address' ) . '>';
-                $headers[] = 'From: ' . $from;
+                $headers[] = 'From: "' . get_option('bf-organisation') . '" <' . get_option('newsletter-sender-address') . '>';
                 $headers[] = "Content-type: text/html";
                 $message = str_replace( "%email%", $email, $post->post_content );
                 wp_mail( $email, $subject, $message, $headers );
