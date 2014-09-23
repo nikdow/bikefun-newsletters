@@ -184,7 +184,7 @@ function save_bf_newsletter(){
                 if ( $testing && $count > 5 ) break;
             }
             echo json_encode( array ( "success"=>"completed: " . $count . " emails" ) );
-            if( ! $testing ) {
+            if( ! $testing && $test_addresses === "" ) {
                 update_post_meta ( $post->ID, "bf_newsletter_sent", "1" );
             }
             die;
