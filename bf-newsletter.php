@@ -164,7 +164,7 @@ function save_bf_newsletter(){
                     " WHERE p.post_type='bf_subscription' AND p.`post_status`='private'", array() );
                 $sendTo = $wpdb->get_results ( $query );
             }
-            $testing = true; // true on dev computer - not the same as test addresses from UI
+            $testing = false; // true on dev computer - not the same as test addresses from UI
             $count =0;
             foreach ( $sendTo as $one ) {
                 $email = $one->email;
