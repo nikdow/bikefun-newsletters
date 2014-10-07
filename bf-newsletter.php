@@ -281,19 +281,24 @@ function newsletter_content( $content, $post ) {
     
     foreach ( $rows as $row ) {
         $custom = get_post_custom( $row->ID );
-        $meta_sd = $custom["bf_events_startdate"][0] + get_option( 'gmt_offset' ) * 3600;
-        $meta_ed = $custom["bf_events_enddate"][0] + get_option( 'gmt_offset' ) * 3600;
-        $meta_st = $meta_sd;
-        $meta_et = $meta_ed;
+        $meta_sd = $custom["bf_events_startdate"][0];
+        $meta_ed = $custom["bf_events_enddate"][0];
+        $startDT = new DateTime();
+        $startDT->setTimestamp( $meta_sd );
+        $startDT->setTimezone( new DateTimeZone ( get_option( 'timezone_string' ) ) );
+        $endDT = new DateTime();
+        $endDT->setTimestamp( $meta_ed );
+        $endDT->setTimezone( new DateTimeZone ( get_option( 'timezone_string' ) ) );
+        
         $meta_place = $custom["bf_events_place"][0];
         $meta_url = $custom["bf_events_url"][0];
         
         $time_format = get_option('time_format');
         
-        $clean_sd = date("D, d M Y", $meta_sd);
-        $clean_ed = date("D, d M Y", $meta_ed);
-        $clean_st = date($time_format, $meta_st);
-        $clean_et = date($time_format, $meta_et);
+        $clean_sd = $startDT->format( "D, d M Y" );
+        $clean_ed = $endDT->format( "D, d M Y" );
+        $clean_st = $startDT->format( $time_format );
+        $clean_et = $endDT->format( $time_format );
         if( $clean_ed === $clean_sd ) $clean_ed = "";
         
         $if_url = $meta_url ? "display: block;" : "display: none;";
