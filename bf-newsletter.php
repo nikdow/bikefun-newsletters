@@ -175,6 +175,7 @@ function save_bf_newsletter(){
                 $headers[] = 'From: "' . get_option('bf-organisation') . '" <' . get_option('newsletter-sender-address') . '>';
                 $headers[] = "Content-type: text/html";
                 $message = str_replace( "%email%", $email, $post->post_content );
+                $message = str_replace("\r\n", "<br/>\r\n", $message );
                 wp_mail( $email, $subject, $message, $headers );
                 $count++;
                 update_post_meta($post->ID, "bf_newsletter_progress", json_encode( array ( 
