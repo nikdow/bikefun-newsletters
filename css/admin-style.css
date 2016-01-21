@@ -23,5 +23,10 @@ form#newsletter_options textarea {
     width: 800px;
 }
 
-
+.progress-bar {
+    background-color: #BBB
+}
+.progress {
+    border: solid 1px #AAA;
+}
 

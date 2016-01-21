@@ -1,4 +1,4 @@
-var newsletterAdmin = angular.module('newsletterAdmin', []);
+var newsletterAdmin = angular.module('newsletterAdmin', ['ui.bootstrap']);
 
 newsletterAdmin.controller('newsletterAdminCtrl', ['$scope', '$timeout',
     function( $scope, $timeout ) {
@@ -14,11 +14,12 @@ newsletterAdmin.controller('newsletterAdminCtrl', ['$scope', '$timeout',
             }
             $('#post input[name=bf_newsletter_send_newsletter]').val('1');
             var data = $('#post').serializeArray();
+            $scope.email = {total:1, count:0};
             $scope.sending = true;
             $scope.showLoading = true;
             $.post( $scope.main.post_url, data, function( response ) {
                 $scope.showLoading = false;
-                var ajaxdata = $.parseJSON( response );
+                var ajaxdata = $.parseJSON( response ); return;
                 $timeout.cancel ( $scope.progress );
                 $scope.sending = false;
                 $scope.showProgressMessage = true;

@@ -14,9 +14,11 @@
 function bf_newsletter_admin_scripts( $hook = "" ) {
     global $post;
     if( $post->post_type !== 'bf_newsletter' && "bf_newsletter_options" != $hook ) return;
-    wp_register_script( 'angular', "//ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js", 'jquery' );
-    wp_register_script('newsletter-admin', plugins_url( 'js/newsletter-admin.js' , __FILE__ ), array('jquery', 'angular') );
-    wp_enqueue_script('angular');
+    wp_register_script( 'angular1', "http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js", 'jquery' );
+    wp_register_script( 'ui-bootstrap', plugins_url( 'js/ui-bootstrap-tpls-1.1.0.min.js', __FILE__ ), 'angular' );
+    wp_register_script( 'newsletter-admin', plugins_url( 'js/newsletter-admin.js' , __FILE__ ), 'angular' );
+    wp_enqueue_script('angular1');
+    wp_enqueue_script('ui-bootstrap');
     wp_localize_script( 'newsletter-admin', '_main',
         array( 'post_url' => admin_url('post.php'),
                'ajax_url' => admin_url('admin-ajax.php'),
@@ -101,11 +103,11 @@ function bf_newsletter_meta() {
                 <li><input class='wide' name='bf_newsletter_test_addresses'/></li>
                 <li><button type="button" ng-click="sendNewsletter()">Send newsletter</button></li>
                 <li ng-show="showLoading"><img src="<?php echo get_site_url();?>/wp-includes/js/thickbox/loadingAnimation.gif"></li>
-                <li ng-show='showProgressNumber'>
-                    {{email.count}} sent of {{email.total}}
-                </li>
                 <li ng-show='showProgressMessage'>
                     {{email.message}}
+                </li>
+                <li ng-show='showProgressNumber || showProgressMessage'>
+                    <uib-progressbar max="email.total" value="email.count"><span style="white-space:nowrap;">{{email.count}} / {{email.total}}</span></uib-progressbar>
                 </li>
             </ul>
     <input name='ajax_id' value="<?=$post->ID?>" type="hidden" />
