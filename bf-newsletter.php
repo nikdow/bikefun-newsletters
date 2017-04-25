@@ -14,7 +14,7 @@
 function bf_newsletter_admin_scripts( $hook = "" ) {
     global $post;
     if( $post->post_type !== 'bf_newsletter' && "bf_newsletter_options" != $hook ) return;
-    wp_register_script( 'angular1', "http://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js", 'jquery' );
+    wp_register_script( 'angular1', "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js", 'jquery' );
     wp_register_script( 'ui-bootstrap', plugins_url( 'js/ui-bootstrap-tpls-1.1.0.min.js', __FILE__ ), 'angular' );
     wp_register_script( 'newsletter-admin', plugins_url( 'js/newsletter-admin.js' , __FILE__ ), 'angular' );
     wp_enqueue_script('angular1');
