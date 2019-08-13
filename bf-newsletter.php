@@ -268,7 +268,7 @@ function newsletter_content( $content, $post ) {
                 $header );
             
     global $wpdb;
-    $now = time() + ( get_option( 'gmt_offset' ) * 3600 );
+    $now = time();
 
     $query = $wpdb->prepare ( 
         "SELECT p.post_title, p.ID, p.post_content, pms.meta_value as startdate from " . $wpdb->posts . " p" .
