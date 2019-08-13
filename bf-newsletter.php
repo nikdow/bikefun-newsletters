@@ -277,6 +277,7 @@ function newsletter_content( $content, $post ) {
         " WHERE p.post_type='bf_events' AND p.`post_status`='publish' AND pme.meta_value > " . $now .
         " ORDER BY startdate ASC", array()
     );
+    error_log( $query );
     $rows = $wpdb->get_results ( $query );
     
     
