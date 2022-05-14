@@ -135,7 +135,7 @@ function save_bf_newsletter(){
             return $post->ID;
 
         // - convert back to unix & update post
-
+        $sendTo = [];
         if( isset( $_POST['bf_newsletter_send_newsletter']) && $_POST[ 'bf_newsletter_send_newsletter' ] === '1' ) {
             
             $test_addresses = $_POST['bf_newsletter_test_addresses'];
