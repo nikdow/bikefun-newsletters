@@ -320,6 +320,7 @@ function newsletter_content( $content, $post ) {
                     '{if_url}',
                     '{url}',
                     '{permalink}',
+                    '{post_id}'
                     ),
                 array( $row->post_title,
                     $clean_sd,
@@ -332,6 +333,7 @@ function newsletter_content( $content, $post ) {
                     $if_url,
                     $meta_url,
                     $permalink,
+                    $row->ID,
                     ),
                 $eventTemplate);
     }
