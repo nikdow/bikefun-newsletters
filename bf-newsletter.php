@@ -1,4 +1,5 @@
 <?php
+use app\models\EmailQueue;use yii\helpers\Json;
 /**
  * Plugin Name: Bike Fun Newsletter
  * Plugin URI: http://www.cbdweb.net
@@ -168,17 +169,31 @@ function save_bf_newsletter(){
             }
             $testing = false; // true on dev computer - not the same as test addresses from UI
             $count =0;
+            $console = new wpdb( DB_USER, DB_PASSWORD, 'console', 'DB_HOST' );
+            $fromParam = [];
+            $fromAddrStr = get_option('newsletter-sender-address');
+            $fromParam[$fromAddrStr] = get_option('bf-organisation');
             foreach ( $sendTo as $one ) {
-                $email = $one->email;
+                $email = trim($one->email);
+                if( $email === "") continue;
                 if ( $testing ) $email = "nik@cbdweb.net";
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
-                $headers = array();
+/*                $headers = array();
                 $headers[] = 'From: "' . get_option('bf-organisation') . '" <' . get_option('newsletter-sender-address') . '>';
                 $headers[] = "Content-type: text/html";
                 $message = str_replace( "%email%", $email, $post->post_content );
                 $message = str_replace("\r\n", "<br/>\r\n", $message );
-                wp_mail( $email, $subject, $message, $headers );
+                wp_mail( $email, $subject, $message, $headers );*/
+
+                $params = [
+                    'fromParam' => $fromParam,
+                    'mailto' => $email,
+                    'subject' => $subject,
+                    'textmessagebody' => 'Your email reader is not able to display this rich-text email',
+                    'htmlmessagebody' => $message,
+                ];
+                $console->insert('email_queue', ['json'=>Json::encode($params), 'domain'=>'bikefun' ]);
                 $count++;
                 update_post_meta($post->ID, "bf_newsletter_progress", json_encode( array ( 
                     'count'=>$count, 'total'=>Count( $sendTo ),
