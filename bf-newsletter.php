@@ -1,5 +1,4 @@
 <?php
-use app\models\EmailQueue;use yii\helpers\Json;
 /**
  * Plugin Name: Bike Fun Newsletter
  * Plugin URI: http://www.cbdweb.net
