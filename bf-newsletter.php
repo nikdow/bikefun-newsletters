@@ -201,7 +201,6 @@ function save_bf_newsletter(){
                 wp_mail( $email, $subject, $message, $headers );*/
 
                 $params = [
-                    'dummy' => false,
                     'fromParam' => $fromParam,
                     'mailto' => $email,
                     'subject' => $subject,
