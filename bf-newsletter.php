@@ -187,6 +187,10 @@ function save_bf_newsletter(){
                 if( $email === "") continue;
                 if ( $testing ) $email = "nik@cbdweb.net";
                 if( ! $validator->isValid( $email, new RFCValidation() )) continue;
+
+                $message = str_replace( "%email%", $email, $post->post_content );
+                $message = str_replace("\r\n", "<br/>\r\n", $message );
+
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
 /*                $headers = array();
