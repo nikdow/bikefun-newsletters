@@ -173,7 +173,7 @@ function save_bf_newsletter(){
             }
             $testing = false; // true on dev computer - not the same as test addresses from UI
             $count =0;
-            $console = new wpdb( DB_USER, DB_PASSWORD, 'console', 'DB_HOST' );
+            $console = new wpdb( DB_USER, DB_PASSWORD, 'console', DB_HOST );
             $fromParam = [];
             $fromAddrStr = get_option('newsletter-sender-address');
             $validator = new EmailValidator();
