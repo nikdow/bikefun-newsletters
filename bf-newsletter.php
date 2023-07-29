@@ -204,10 +204,7 @@ function save_bf_newsletter(){
                     'htmlmessagebody' => $message,
                 ];
                 if( ! $console->insert('email_queue', ['json'=>json_encode($params), 'domain'=>'bikefun' ]) ){
-                    update_post_meta($post->ID, "bf_newsletter_progress", json_encode( array (
-                    'count'=>$count, 'total'=>Count( $sendTo ),
-                    'message'=>'error inserting to email_queue ' . $email,
-                ) ) );
+                    error_log('Error inserting to email_queue ' . $email );
                 }
                 $count++;
                 update_post_meta($post->ID, "bf_newsletter_progress", json_encode( array ( 
