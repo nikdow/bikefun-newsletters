@@ -1,0 +1,19 @@
+{
+    "name": "bikefun/newsletter",
+    "description": "WordPress newsletter plugin",
+    "keywords": ["wordpress", "plugin", "bikefun", "newsletter"],
+    "homepage": "https://bikefun.org",
+    "type": "project",
+    "license": "BSD-3-Clause",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.2.0",
+        "egulias/email-validator": ">=4.0.0"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
+}

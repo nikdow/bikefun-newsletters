@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Bike Fun Newsletter
  * Plugin URI: http://www.cbdweb.net
@@ -11,6 +12,10 @@
  * Newsletters
  */
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
+
+require __DIR__ . '/vendor/autoload.php';
 function bf_newsletter_admin_scripts( $hook = "" ) {
     global $post;
     if( $post->post_type !== 'bf_newsletter' && "bf_newsletter_options" != $hook ) return;
@@ -171,11 +176,17 @@ function save_bf_newsletter(){
             $console = new wpdb( DB_USER, DB_PASSWORD, 'console', 'DB_HOST' );
             $fromParam = [];
             $fromAddrStr = get_option('newsletter-sender-address');
+            $validator = new EmailValidator();
+            if( ! $validator->isValid($fromAddrStr, new RFCValidation())){
+                echo json_encode(array('error'=>'sender address is invalid'));
+                die;
+            }
             $fromParam[$fromAddrStr] = get_option('bf-organisation');
             foreach ( $sendTo as $one ) {
                 $email = trim($one->email);
                 if( $email === "") continue;
                 if ( $testing ) $email = "nik@cbdweb.net";
+                if( ! $validator->isValid( $email, new RFCValidation() )) continue;
                 $subject = $post->post_title;
                 if ( $testing ) $subject .= " - " . $one->email;
 /*                $headers = array();
