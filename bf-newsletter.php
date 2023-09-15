@@ -207,7 +207,7 @@ function save_bf_newsletter(){
                     'textmessagebody' => 'Your email reader is not able to display this rich-text email',
                     'htmlmessagebody' => $message,
                 ];
-                $today = new Date();
+                $today = new DateTime();
                 $created = $today->format('Y-m-d H:i:s');
                 if( ! $console->insert('email_queue', ['json'=>json_encode($params), 'domain'=>'bikefun', 'created'=>$created ]) ){
                     error_log('Error inserting to email_queue ' . $email );
